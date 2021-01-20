@@ -4,6 +4,8 @@ import { Ingredient } from "../shared/ingredient.model";
 
 @Injectable()
 export class ShoppingListService{
+
+
     subscription = new Subject<Ingredient[]>();
     startedEditing = new Subject<number>();
     private ingredients: Ingredient[] = [
@@ -30,6 +32,11 @@ export class ShoppingListService{
 
     updateIngredient(index:number, newIngredient: Ingredient) {
         this.ingredients[index] = newIngredient;
+        this.subscription.next(this.ingredients.slice());
+    }  
+    
+    deleteIngredient(index: number) {
+        this.ingredients.splice(index, 1);
         this.subscription.next(this.ingredients.slice());
     }
 }
