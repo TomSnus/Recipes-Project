@@ -1,8 +1,9 @@
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { catchError } from "rxjs/operators";
-import { throwError } from 'rxjs';
+import { catchError, tap } from "rxjs/operators";
+import { Subject, throwError } from 'rxjs';
 import { ɵangular_packages_platform_browser_platform_browser_k } from "@angular/platform-browser";
+import { User } from "./user.model";
 
 export interface AuthResponseData {
     kind: string;
@@ -18,6 +19,7 @@ export interface AuthResponseData {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+    user = new Subject<User>();
 
     constructor(private http: HttpClient) { }
 
@@ -28,7 +30,9 @@ export class AuthService {
                 password: password,
                 returnSecureToken: true,
             }
-        ).pipe(catchError(this.handleError));
+        ).pipe(catchError(this.handleError), tap(resData => {
+            this.handleAuthentication(resData.email, resData.localId, resData.IdToken, +resData.expiresIn);
+        }));
     }
 
     login(email: string, password: string) {
@@ -36,7 +40,9 @@ export class AuthService {
             email: email,
             password: password,
             returnSecureToken: true,
-        }).pipe(catchError(this.handleError));
+        }).pipe(catchError(this.handleError), tap(resData => {
+            this.handleAuthentication(resData.email, resData.localId, resData.IdToken, +resData.expiresIn);
+        }));
     }
 
     private handleError(errorRes: HttpErrorResponse) {
@@ -51,10 +57,18 @@ export class AuthService {
             case 'EMAIL_NOT_FOUND':
                 errorMessage = 'This email does not exist';
                 break;
-            case 'PASSWORD_NOT_FOUND':
+            case 'INVALID_PASSWORD':
                 errorMessage = 'Wrong password';
                 break;
         }
         return throwError(errorMessage);
     }
+
+    private handleAuthentication(email: string, id: string, token: string, expiresIn: number) {
+        const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
+        const user = new User(email, id, token, expirationDate);
+        this.user.next(user);
+    }
+
+    
 }
