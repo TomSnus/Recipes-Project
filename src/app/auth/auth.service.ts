@@ -4,10 +4,11 @@ import { catchError, tap } from "rxjs/operators";
 import { Subject, throwError } from 'rxjs';
 import { ɵangular_packages_platform_browser_platform_browser_k } from "@angular/platform-browser";
 import { User } from "./user.model";
+import { BehaviorSubject } from 'rxjs-compat';
 
 export interface AuthResponseData {
     kind: string;
-    IdToken: string;
+    idToken: string;
     email: string;
     refreshToken: string;
     expiresIn: string;
@@ -19,8 +20,8 @@ export interface AuthResponseData {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-    user = new Subject<User>();
-
+    user = new BehaviorSubject<User>(null);
+    
     constructor(private http: HttpClient) { }
 
     signUp(email: string, password: string) {
@@ -31,7 +32,7 @@ export class AuthService {
                 returnSecureToken: true,
             }
         ).pipe(catchError(this.handleError), tap(resData => {
-            this.handleAuthentication(resData.email, resData.localId, resData.IdToken, +resData.expiresIn);
+            this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expiresIn);
         }));
     }
 
@@ -41,7 +42,7 @@ export class AuthService {
             password: password,
             returnSecureToken: true,
         }).pipe(catchError(this.handleError), tap(resData => {
-            this.handleAuthentication(resData.email, resData.localId, resData.IdToken, +resData.expiresIn);
+            this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expiresIn);
         }));
     }
 
