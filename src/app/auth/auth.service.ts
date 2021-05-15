@@ -1,8 +1,7 @@
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { catchError, tap } from "rxjs/operators";
-import { Subject, throwError } from 'rxjs';
-import { ɵangular_packages_platform_browser_platform_browser_k } from "@angular/platform-browser";
+import { throwError } from 'rxjs';
 import { User } from "./user.model";
 import { BehaviorSubject } from 'rxjs-compat';
 import { Router } from '@angular/router';
