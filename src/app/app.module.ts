@@ -19,14 +19,15 @@ import { AuthInterceptor } from './auth/auth-interceptor.service';
 import { AlertComponent } from './shared/alert/alert.component';
 import { PlaceholderDirective } from './shared/placeholder/placeholder.directive';
 import { RecipesModule } from './recipes/recipes.module';
+import { RecipesRoutingModule } from './recipes/recipes-routing.module';
+import { ShoppingListModule } from './shopping-list/shopping-list.module';
+import { ShoppingListRoutingModule } from './shopping-list/shopping-list-routing.module';
+import { SharedModule } from './shared/shared.module';
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
-    ShoppingListComponent,
-    ShoppingEditComponent, 
-    DropDownDirective, AuthComponent, 
-    LoadingSpinnerComponent, AlertComponent, PlaceholderDirective
+    AuthComponent, 
   ],
   imports: [
     BrowserModule,
@@ -34,7 +35,11 @@ import { RecipesModule } from './recipes/recipes.module';
     ReactiveFormsModule,
     AppRoutingModule,
     HttpClientModule,
-    RecipesModule
+    RecipesModule, 
+    RecipesRoutingModule, 
+    ShoppingListModule, 
+    ShoppingListRoutingModule, 
+    SharedModule
   ],
   providers: [ShoppingListService, RecipeService, {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}],
   bootstrap: [AppComponent]
