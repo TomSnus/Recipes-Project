@@ -8,11 +8,6 @@ import {
     START_EDIT,
     STOP_EDIT
 } from './shipping-list.actions';
-
-export interface AppState {
-    shoppingList: State;
-}
-
 export interface State {
     ingredients: Ingredient[];
     editedIngredient: Ingredient; 
