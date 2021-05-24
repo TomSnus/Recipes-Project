@@ -1,11 +1,13 @@
 import { User } from "../user.model";
 import {
-  AuthActions,
-  LOGIN,
-  LOGOUT,
-  LOGIN_START,
-  LOGIN_FAIL,
-} from "./auth.actions";
+    AuthActions,
+    LOGIN,
+    LOGOUT,
+    LOGIN_START,
+    LOGIN_FAIL,
+    SIGNUP_START,
+    HANDLE_ERROR
+} from './auth.actions';
 
 export interface State {
   user: User;
@@ -41,6 +43,7 @@ export function authReducer(state: State = initialState, action: AuthActions) {
         authError: null,
       };
     case LOGIN_START:
+    case SIGNUP_START:
       return {
         ...state,
         authError: null,
@@ -53,6 +56,12 @@ export function authReducer(state: State = initialState, action: AuthActions) {
         loading: false
 
       };
+      case HANDLE_ERROR:
+        return {
+          ...state,
+          authError: null
+  
+        };
     default:
       return state;
   }
