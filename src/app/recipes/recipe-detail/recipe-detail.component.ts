@@ -5,6 +5,7 @@ import { map } from "rxjs/operators";
 
 import { Recipe } from "../recipe.model";
 import { RecipeService } from "../recipe.service";
+import { DeleteRecipe } from "../store/recipes.actions";
 import * as fromApp from "./../../store/app.reducer";
 
 @Component({
@@ -46,7 +47,7 @@ export class RecipeDetailComponent implements OnInit {
   }
 
   onDeleteRecipe() {
-    this.recipeService.deleteRecipe(this.id);
+    this.store.dispatch(new DeleteRecipe(this.id));
     this.router.navigate(["/recipes"]);
   }
 }

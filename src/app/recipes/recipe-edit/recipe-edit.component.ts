@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { FormGroup, FormControl, FormArray, Validators } from '@angular/forms';
 
@@ -6,27 +6,31 @@ import { RecipeService } from '../recipe.service';
 import * as fromApp from "./../../store/app.reducer";
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs/operators';
+import { UpdateRecipe, AddRecipe } from '../store/recipes.actions';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-recipe-edit',
   templateUrl: './recipe-edit.component.html',
   styleUrls: ['./recipe-edit.component.css']
 })
-export class RecipeEditComponent implements OnInit {
+export class RecipeEditComponent implements OnInit, OnDestroy{
   id: number;
   editMode = false;
   recipeForm: FormGroup;
-
+  private storeSub: Subscription;
   get ingredientsControls() {
     return (this.recipeForm.get('ingredients') as FormArray).controls;
   }
 
   constructor(
     private route: ActivatedRoute,
-    private recipeService: RecipeService,
     private strore: Store<fromApp.AppState>,
     private router: Router
   ) {}
+  ngOnDestroy(): void {
+    this.storeSub.unsubscribe();
+  }
 
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {
@@ -43,9 +47,9 @@ export class RecipeEditComponent implements OnInit {
     //   this.recipeForm.value['imagePath'],
     //   this.recipeForm.value['ingredients']);
     if (this.editMode) {
-      this.recipeService.updateRecipe(this.id, this.recipeForm.value);
+      this.strore.dispatch(new UpdateRecipe({index: this.id, newRecipe: this.recipeForm.value}))
     } else {
-      this.recipeService.addRecipe(this.recipeForm.value);
+      this.strore.dispatch(new AddRecipe(this.recipeForm.value));
     }
     this.onCancel();
   }
@@ -77,7 +81,7 @@ export class RecipeEditComponent implements OnInit {
     let recipeIngredients = new FormArray([]);
 
     if (this.editMode) {
-      this.strore.select('recipes').pipe(map(recipeState => {
+      this.storeSub = this.strore.select('recipes').pipe(map(recipeState => {
         return recipeState.recipes.find((recipe, index) => {
           return index === this.id;
         })
